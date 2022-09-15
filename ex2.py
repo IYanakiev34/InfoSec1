@@ -6,11 +6,6 @@ ORG = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','
 def firstLine():
     input_list = input().split(' ')
     
-    if len(input_list) % 2 == 1:
-        input_list.pop(len(input_list) - 1)
-
-    print(input_list)
-
     action_list = []
     value_list = []
     for index,item in enumerate(input_list):
@@ -20,31 +15,30 @@ def firstLine():
             value_list.append(item)
     
     result_list = list(zip(action_list,value_list))
-
-
+    
     return result_list
 
 def createCurrShift(encrypt,shift):
     curr_shift = [None]*26
     alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 
-    if len(shift) > 1 and shift.isnumeric() == False:
+    if len(shift) == 26 and shift.isnumeric() == False:
         for i in range(0,26):
             curr_shift[i] = shift[i]
         curr_shift.append('m')
         return curr_shift
     else:
+        shift = abs(int(shift))
         if encrypt == 'e':
             # Normal list
             for index,item in enumerate(alph):
-                shift = int(shift)
                 curr_shift[(index+shift) % 26] = item
         elif encrypt == 'd':
             alph.reverse()
             for index,item in enumerate(alph):
-                shift = int(shift)
                 curr_shift[(index + shift) % 26] = item
             
+
             curr_shift.reverse()
 
     curr_shift.append(encrypt)
@@ -54,6 +48,11 @@ def createCurrShift(encrypt,shift):
 
 def encryptLine(line,shift):
     new_line = []
+    if shift == '':
+        new_line = line
+        return new_line
+
+    
 
     for i in line:
         is_alpha = i.isalpha()
