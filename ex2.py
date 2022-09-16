@@ -22,89 +22,72 @@ def firstLine():
 
     return result_list
 
-# Shifting the normal lphabet by some value
-def generateShift(action,value):
-     
+def generateShift(action,value,shift = []):
     alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 
-    # 0 or 26 == no shift
-    if value == 0 or value == 26:
-        return alph
-    
-    shift = [None]*26
+    curr_shift = [None]*26
+    for index,i in enumerate(shift):
+        curr_shift[index] = i
 
-    # if we have a mapping convert shhift to mapping 
+
+    # If the value is a mapping
     if value.isalpha() and len(value) == 26:
-        value = list(value)
-        for index,i in enumerate(value):
-            shift[index] = i
+        if action == 'e':
+            for index,i in enumerate(value):
+                # shift[index] = get index of the shift element in th alphabet and then see its mapping
+                shift[index] = value[alph.index(shift[index])]
+        elif action == 'd':
+            for index,i in enumerate(value):
+                shift[index] = alph[value.index(shift[index])]
+        return shift
+    # Value is not mapping
+    value = abs(int(value)) % 26
+    
+    if value == 0:
         return shift
 
-    # create shift 
+
     if action == 'e':
-        #Get the value since it can be negative make abs and mod 26 also
-        value = abs(int(value)) % 26
-        
-        # standard shifting for encryption
         for i in range(0,26):
-            shift[i] = alph[(i + value) % 26]
-    
+            shift[i] = chr(ord('a') +  (ord(curr_shift[i]) - ord('a') + value) % 26)
     elif action == 'd':
-        # Get value and perform again encryption but with 26 - value
-        value = 26 - abs(int(value)) % 26
-        
-        # Same thing as encryption
         for i in range(0,26):
-            shift[i] =alph[(i + value) % 26]
-    
-    # return the shift
+            shift[i] = chr(ord('a') + (ord(curr_shift[i]) - ord('a') + (26 - value)) % 26)
+
     return shift
 
-def applyShiftToLine(line,shift):
+
+def applyShift(shift,line):
     new_line = [None]*len(line)
-
-    alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
     
-    # Take line[i] and i
-    for index,i in enumerate(line):
-        # if character perform encryption or ecryption else just add it
-        if i.isalpha():
+    alph = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 
-            # if is lower just encrypt/decrypt
+    for index,i in enumerate(line):
+        if i.isalpha():
             if i.islower():
                 new_line[index] = shift[alph.index(i)]            
-            # else we need to convert back to upper
             else:
                 new_line[index] = shift[alph.index(i.lower())].upper()
-        # if not alphabetic just add it
         else:
-            new_line[index] = i    
-            
-    return new_line
+            new_line[index] = i
+
+    return new_line    
 
 if __name__ == "__main__":
     # Gathering the action list needed
     result_list = firstLine()
    
-    # The shift list which will contain all the operations we need to perform on a line of text in order
-    shift_list = []
-    
-    # shift list generation (i,j) => i == action, j == value e.g('e',5)
+    shift = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+
     for (i,j) in result_list:
-        shift_list.append(generateShift(i,j))
-    
-    input_lines = []
-    
+        shift = generateShift(i,j,shift)
+
     for line in sys.stdin:
-        input_lines.append(line)
-        
-    result_list = []    
-    for line in input_lines:
-        for i in shift_list:
-            line = applyShiftToLine(line,i)
+        line = applyShift(shift,line)
+        print(''.join(line).replace('\n',''))
 
-        line = ''.join(line).replace('\n','')
-        result_list.append(line)
 
-    for i in result_list:
-        print(i)
+
+
+
+
