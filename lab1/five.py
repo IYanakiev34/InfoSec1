@@ -8,11 +8,10 @@ def standard(array):
         sum += array[i]
     return (math.sqrt(sumxx / 26 - ((sum / 26) * (sum / 26))))
     
-
-
 lowerbound = input()
 upperbound = input()
 ciphertext = ""
+
 while True:
     try:
         line = input()
@@ -29,13 +28,15 @@ for i in range(len(ciphertext)):
     if ciphertext[i].isalpha():
         newtext += ciphertext[i]
 
+maxsum = 0
+
 for i in range(int(lowerbound), (int(upperbound)+1)):
     array = []
+    array.clear()
     for j in range(i):
         array.append(alphabet.copy())
 
     sumStandard = 0
-    deviations = []
     for j in range(i):
         factor = j
         index = factor
@@ -50,14 +51,27 @@ for i in range(int(lowerbound), (int(upperbound)+1)):
             index = factor
         sumStandard += standard(array[j])
         #print(standard(array[j]))
+    
+    if sumStandard > maxsum:
+        maxsum = sumStandard
+        save = array 
+        bound = i
         
     formattedSum = "{:.2f}".format(sumStandard)
-    
     print("The sum of " + str(i) +  " std. devs: " + str(formattedSum))
-    deviations.append(sumStandard)
     sumStandard = 0
     formattedSum = 0
-    #print(array)
-    
-            
-        
+
+key = ""
+for alphabet in save:
+    max = 0
+    for i in range(len(alphabet)):
+        if alphabet[i] > max:
+            max = alphabet[i]
+            index = i
+    index = index - 4
+    if index < 0:
+        index = index + 26
+    key += chr((index)+ord('a'))
+
+print("\nKey guess:\n" + str(key))
