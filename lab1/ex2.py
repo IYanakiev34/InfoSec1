@@ -32,9 +32,8 @@ def encryptLetter(letter, action, value, index_value):
     return letter
 
 
-def applyShift(line, action, value):
+def applyShift(line, action, value,value_index):
     new_line = [None]*len(line)
-    value_index = 0
 
     for index,i in enumerate(line):
         if i.isalpha():
@@ -51,15 +50,16 @@ def applyShift(line, action, value):
         else:
             new_line[index] = i
     
-    return new_line
+    return (new_line,value_index)
 
 
 if __name__ == "__main__":
     (action, value) = getFirstLine()
 
+    value_index = 0
     # Do something with the action or value on the text
     for line in sys.stdin:
-        line = applyShift(line, action, value)
+        (line,value_index) = applyShift(line, action, value,value_index)
         
         # print("The new line is:{0}" .format(''.join(line).replace('\n','')))
         print(''.join(line).replace('\n',''))
