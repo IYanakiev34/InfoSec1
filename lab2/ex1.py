@@ -1,27 +1,24 @@
+import sys
 if __name__ == "__main__":
-    word = input()
-    toBt = ' '.join(bin(ord(x))[2:] for x in word)
-    byte_list = toBt.split(' ')
+    lines = sys.stdin.readlines()
 
-    key = []
-    value = []
+    bytes_array = []
+    for line in lines:
+        for i in line:
+            bytes_array.append(ord(i))
 
-    for i in byte_list:
-        if i == "11111111":
-            break
-        else:
-            key.append(i)
+    if len(bytes_array) % 2 == 0:
+        bytes_array.pop(len(bytes_array) - 1)
 
-    for i in reversed(byte_list):
-        if i == "11111111":
-            break
-        else:
-            value.append(i)
+    key = bytes_array[:len(bytes_array)//2].copy()
+    value = bytes_array[len(bytes_array)//2 + 1:].copy()
 
     out = []
+
     for (k, v) in zip(key, value):
-        out.append(int(k, 2) ^ int(v, 2))
+        if v > 255:
+            v = 255
+        out.append(k ^ v)
 
-    out = ''.join(format(x,'08b') for x in out)
-
-    print(out)
+    for i in out:
+        sys.stdout.buffer.write(i.to_bytes(1,"little"))
