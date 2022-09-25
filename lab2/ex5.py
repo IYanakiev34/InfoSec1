@@ -1,5 +1,12 @@
 import sys
 
+"""
+    Insted of formathing speciifc way alsway format in base 32 this is max int size
+    then chop the string into the size of the knapsack (should be power of 2 otherwise problem)
+    each slice should be encyrpted to the best way possible and outputted
+"""
+
+
 def en():
     public_key = input().split(' ')
     public_key = [int(i) for i in public_key]
@@ -17,6 +24,10 @@ def en():
                     out += j
         print(out)
         out = 0
+
+"""
+    Figure how to handle decrypiton with big knapsack and with large values
+"""
 
 def de():
     first_line = input().split(' ')
