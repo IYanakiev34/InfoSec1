@@ -1,5 +1,3 @@
-from sre_parse import fix_flags
-import unicodedata
 import sys
 
 
@@ -33,28 +31,55 @@ def get_keystream(key):
 
 
 if __name__ == "__main__":
-    lines = sys.stdin.buffer.readlines()
-    
+    lines = sys.stdin.readlines()
     bytes_array = []
     for line in lines:
-        readable = line.decode('utf-8')
-        print(readable)
-        for i in readable:
+        for i in line:
             bytes_array.append(ord(i))
 
-    print(bytes_array)
-
+    # print("Bytes array:{0}\n" .format(bytes_array))
+    # bytes_array.pop(len(bytes_array) - 1)
+    key = []
+    value = []
     
-    # keystream = get_keystream(key)
+    first_index = -1
+    for i in bytes_array:
+        # Thanks to stupid themis :))))) FIX IT PLEASE
+        if i == 56575:
+            i = 255
 
-    
+        if first_index == -2:
+            value.append(i)
+
+        if i == 255 and first_index == -1:
+            first_index = -2
+        elif i != 255 and first_index == -1:
+            key.append(i)
+
+    # print("\nkey:\n{0}\nvalue:\n{1}\n" .format(key, value))
+
+    keystream = get_keystream(key)
     # discard phase
-    #for i in range(0, 256):
-        # c = next(keystream)
+    for i in range(0,256):
+        c = next(keystream)
 
-    # out = []
-    # for c in value:
-        # val = c ^ next(keystream)
-        # out.append(val)
+    out = []
+    for c in value:
+        val = c ^ next(keystream)
+        out.append(val)
+        
+    hexes = []
+    for i in out:
+        hexes.append(hex(i))
+
+    # print("\n{0}\n" .format(hexes))
+    # print("\n{0}\n" .format(out))
+
+    for i in out:
+        if i <= 255:
+            sys.stdout.buffer.write(i.to_bytes(1, "little"))
+        else:
+            sys.stdout.buffer.write(i.to_bytes(2, "little"))
 
 
+# y => 195,191
