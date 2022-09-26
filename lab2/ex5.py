@@ -13,30 +13,20 @@ def en():
     
     for value in sys.stdin:
         value = int(value)
-        value = format(value,'64b')
-        chop_value = 8
+        orig = value
+        value = format(value,'08b')
         if len(public_key) == 16:
-            chop_value = 16
-        elif len(public_key) == 32:
-            chop_value = 32
-        elif len(public_key) == 64:
-            chop_value = 64
+            value = format(orig,'16b')
+        out = 0
+        for (k,j) in zip(reversed(value),public_key):
+            if k.isnumeric():
+                if int(k) == 1:
+                    out += j
+            else:
+                break
+            
+        print(out)
 
-        out_list = []
-        for i in range(0,64,chop_value):
-            chop = value[i:i+chop_value]
-            out = 0
-            should_print = False
-            for (k,j) in zip(chop,reversed(public_key)):
-                if k.isnumeric():
-                    should_print = True
-                    if int(k) == 1:
-                        out += j
-            if should_print:
-                out_list.append(out)
-
-        out_list = [str(i) for i in out_list]
-        print(' '.join(out_list))
 """
     Figure how to handle decrypiton with big knapsack and with large values
 """
