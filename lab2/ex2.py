@@ -31,32 +31,31 @@ def get_keystream(key):
 
 
 if __name__ == "__main__":
-    lines = sys.stdin.readlines()
+    lines = sys.stdin.buffer.readlines()
     bytes_array = []
     for line in lines:
-        for i in line:
-            bytes_array.append(ord(i))
+        bytes_array +=(list(line))
+    
+    # print("\nBytes array before filtering:\n{0}\n" .format(bytes_array))
 
-    # print("Bytes array:{0}\n" .format(bytes_array))
-    # bytes_array.pop(len(bytes_array) - 1)
+    for index,i in enumerate(bytes_array):
+        if i == 195 and bytes_array[index+1] == 191:
+            bytes_array[index+1] = 255
+            bytes_array.pop(index)
+    # print("\nBytes array after filtering:\n{0}\n" .format(bytes_array))
+    
     key = []
     value = []
+    first_y = -1
     
-    first_index = -1
-    for i in bytes_array:
-        # Thanks to stupid themis :))))) FIX IT PLEASE
-        if i == 56575:
-            i = 255
+    for index,i in enumerate(bytes_array):
+        if i == 255 and first_y == -1:
+            first_y = index
+            break
 
-        if first_index == -2:
-            value.append(i)
+    key = bytes_array[:first_y].copy()
+    value = bytes_array[first_y+1:].copy()
 
-        if i == 255 and first_index == -1:
-            first_index = -2
-        elif i != 255 and first_index == -1:
-            key.append(i)
-
-    # print("\nkey:\n{0}\nvalue:\n{1}\n" .format(key, value))
 
     keystream = get_keystream(key)
     # discard phase
@@ -68,18 +67,8 @@ if __name__ == "__main__":
         val = c ^ next(keystream)
         out.append(val)
         
-    hexes = []
-    for i in out:
-        hexes.append(hex(i))
-
-    # print("\n{0}\n" .format(hexes))
-    # print("\n{0}\n" .format(out))
 
     for i in out:
         if i <= 255:
             sys.stdout.buffer.write(i.to_bytes(1, "little"))
-        else:
-            sys.stdout.buffer.write(i.to_bytes(2, "little"))
 
-
-# y => 195,191
