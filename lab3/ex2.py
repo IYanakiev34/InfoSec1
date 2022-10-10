@@ -1,5 +1,58 @@
+import collections
+
+
+def inv(n, q):
+    return egcd(n, q)[0] % q
+
+
+def egcd(a, b):
+    s0, s1, t0, t1 = 1, 0, 0, 1
+    while b > 0:
+        q, r = divmod(a, b)
+        a, b = b, r
+        s0, s1, t0, t1 = s1, s0 - q * s1, t1, t0 - q * t1
+    return s0, t0, a
+
+
+Coord = collections.namedtuple("Coord", ["x", "y"])
+
+
+class ElCurv(object):
+    def __init__(self, a, b, q):
+        self.a = a
+        self.b = b
+        self.q = q
+        self.zero = Coord(0, 0)
+
+    def add(self, point1, point2):
+        if point1 == self.zero:
+            return point2
+        if point2 == self.zero:
+            return point1
+        if point1.x == point2.x and (point1.y != point2.y or point1.y == 0):
+            return self.zero
+        if point1.x == point2.x:
+            line = (
+                (3 * point1.x * point1.x + self.a) * inv(2 * point1.y, self.q) % self.q
+            )
+        else:
+            line = (point2.y - point1.y) * inv(point2.x - point1.x, self.q) % self.q
+
+        x = (line * line - point1.x - point2.x) % self.q
+        y = (line * (point1.x - x) - point1.y) % self.q
+        return Coord(x, y)
+
+    def mult(self, p, n):
+        res = self.zero
+        point2 = p
+        while 0 < n:
+            if n & 1 == 1:
+                res = self.add(res, point2)
+            n, point2 = n >> 1, self.add(point2, point2)
+        return res
+
+
 if __name__ == "__main__":
-    print("Hello from ex2")
 
     ##
     # Input:
@@ -34,8 +87,22 @@ if __name__ == "__main__":
     # infinity + P = P for all P
     ###
 
-    # Solution steps
-    # Take input
-    # Calculate P = m * (n * (x,y))
-    # Implement multiplication as addition
-    # Return shared secret P
+    # Bacause of stupid themis cant do one liner :((()))
+    point = input()
+    point = point.replace("(", "").replace(")", "").split(",")
+    point = [int(i.replace(" ", "")) for i in point]
+    point = Coord(point[0], point[1])
+    par = input().split(" ")
+    a = int(par[0])
+    b = int(par[1])
+    p = int(par[2])
+    par = input().split(" ")
+    m = int(par[0])
+    n = int(par[1])
+
+    curv = ElCurv(a, b, p)
+
+    new_point = curv.mult(point, m)
+    final_point = curv.mult(new_point, n)
+
+    print("({0}, {1})".format(final_point.x, final_point.y))
