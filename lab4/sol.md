@@ -29,7 +29,11 @@ Some obvious things:
 We can assume their is no conflict of interest between finance and media or finance and pharmy and etc. Conflicts arise in the fields themself. Lets assume E1 acesses C1 and E2 accesses C3 then the Chinese Wall Policy would say that E1 cannot access files about C3 and that E2 cannot access files for C1 since there is a conflict of interest. Howevery E1 could browse the files of the Pharamcy and Media companies for example. But has locked access to documents D5 and D7. If E1 accesses either of the pharmacy companies he should not be able to access any of the other. Basically if the employees operate within the same field (i.e. same type of company:Finance,Pharmacy or Media) they should not be able to see the documents for the oposing employee since that would break the Chinese Wall Policy. If they operate within different field lets say E1 in media and E2 in finance then since finance and media are not competitors and have no conflict of interest E1 and E2 can browse the documents from the cross domain.
 
 
+## Exercice 1 from the prf
+1. 8 from the book
+    * 11100111 -> Makes a collision
+    * 10001111 -> Makes a collision
+In order to create a collision we just need to xor the divisor in our case 10011 with the original message 10101011 startinmg from any bit after the first one and the resulting modified message will produce the same checksum
 
-
-
-
+2. 9 from the textbook
+    * one possible value is 11100111 there might be more
