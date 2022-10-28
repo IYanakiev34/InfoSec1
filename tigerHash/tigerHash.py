@@ -541,59 +541,59 @@ def feedforward(vals, saveVals):
     vals[2] = (vals[2] + saveVals[2]) & fs
     return vals
 
-def passer(a,b,c,mul,bytes,ts):
-    a,b,c = round (a,b,c, bytes[0] ,mul,ts)
-    b,c,a = round(b,c,a, bytes[1] ,mul,ts)
-    c,a,b = round(c,a,b, bytes[2] ,mul,ts)
-    a,b,c = round (a,b,c, bytes[3] ,mul,ts)
-    b,c,a = round (b,c,a, bytes[4], mul,ts)
-    c,a,b = round(c,a,b, bytes[5],mul,ts)
-    a,b,c = round(a,b,c, bytes[6] ,mul,ts)
-    b,c,a = round(b,c,a, bytes[7] ,mul,ts)
+def passer(a,b,c,mul,bit,ts):
+    a,b,c = round (a,b,c, bit[0] ,mul,ts)
+    b,c,a = round(b,c,a, bit[1] ,mul,ts)
+    c,a,b = round(c,a,b, bit[2] ,mul,ts)
+    a,b,c = round (a,b,c, bit[3] ,mul,ts)
+    b,c,a = round (b,c,a, bit[4], mul,ts)
+    c,a,b = round(c,a,b, bit[5],mul,ts)
+    a,b,c = round(a,b,c, bit[6] ,mul,ts)
+    b,c,a = round(b,c,a, bit[7] ,mul,ts)
     return [a,b,c]
 
 
-def keySchedule(bytes):
+def keySchedule(b):
     fs = 0xFFFFFFFFFFFFFFFF
-    bytes[0] = (bytes[0] - (bytes[7] ^ 0xA5A5A5A5A5A5A5A5) & fs) & fs
-    bytes[1] ^= bytes[0]
-    bytes[2] = (bytes[2] + bytes[1]) & fs
-    bytes[3] = (bytes[3] - (bytes[2] ^ ((~bytes[1]&fs) << 19) & fs)) & fs
-    bytes[4] ^= bytes[3]
-    bytes[5] = (bytes[5] + bytes[4]) & fs
-    bytes[6] = (bytes[6] - (bytes[5] ^ (~bytes[4] & fs) << 23) & fs) & fs
-    bytes[7] ^= bytes[6]
-    bytes[0] = (bytes[0] + bytes[7]) & fs
-    bytes[1] = (bytes[1] - (bytes[0] ^ (~bytes[7] & fs) << 19) & fs) & fs
-    bytes[2] ^= bytes[1]
-    bytes[3] = (bytes[3] + bytes[2]) & fs
-    bytes[4] = (bytes[4] - (bytes[3] ^ (~bytes[2] & fs) << 23) & fs) & fs
-    bytes[5] ^= bytes[4]
-    bytes[6] = (bytes[6] + bytes[5]) & fs
-    bytes[7] -= bytes[6] ^ 0x0123456789ABCDEF;
+    b[0] = (b[0] - (b[7] ^ 0xA5A5A5A5A5A5A5A5) & fs) & fs
+    b[1] ^= b[0]
+    b[2] = (b[2] + b[1]) & fs
+    b[3] = (b[3] - (b[2] ^ ((~b[1]&fs) << 19) & fs)) & fs
+    b[4] ^= b[3]
+    b[5] = (b[5] + b[4]) & fs
+    b[6] = (b[6] - (b[5] ^ (~b[4] & fs) << 23) & fs) & fs
+    b[7] ^= b[6]
+    b[0] = (b[0] + b[7]) & fs
+    b[1] = (b[1] - (b[0] ^ (~b[7] & fs) << 19) & fs) & fs
+    b[2] ^= b[1]
+    b[3] = (b[3] + b[2]) & fs
+    b[4] = (b[4] - (b[3] ^ (~b[2] & fs) << 23) & fs) & fs
+    b[5] ^= b[4]
+    b[6] = (b[6] + b[5]) & fs
+    b[7] -= b[6] ^ 0x0123456789ABCDEF;
 
 
 def hash(list, vals,ts):
     saveVals = vals.copy()
-    bytes = []
+    b = []
     for i in range(0, 512, 64):
-        bytes.append(int(list[i:i+64], base=2))
+        b.append(int(list[i:i+64], base=2))
     #print(bytes)
-    vals = passer(vals[0], vals[1], vals[2], 5, bytes,ts)
-    keySchedule(bytes)
-    vals = passer(vals[0], vals[1], vals[2], 7, bytes,ts)
-    keySchedule(bytes)
-    vals = passer(vals[0], vals[1], vals[2], 9, bytes,ts)
+    vals = passer(vals[0], vals[1], vals[2], 5, b,ts)
+    keySchedule(b)
+    vals = passer(vals[0], vals[1], vals[2], 7, b,ts)
+    keySchedule(b)
+    vals = passer(vals[0], vals[1], vals[2], 9, b,ts)
     vals = feedforward(vals, saveVals)
     return vals
        
 
 # Taking in the input and padding
-input = input()
-length = len(input)
+inp = input()
+length = len(inp)
 len2 = length+1
 inn = []
-for i in input:
+for i in inp:
     inn.append(format(ord(i), '08b'))
 
 inn.append(format(1, '08b'))
@@ -603,14 +603,13 @@ while len2 % 64 != 56:
     inn.append(format(0, '08b'))
 
 inn.append(format(length*8, '064b'))
-print(inn)
 inn = ''.join(inn)
 ts = [t1,t2,t3,t4]
-print(len(inn))
 # Starting the hash
 for i in range(0,len(inn),512):
     valscopy = vals.copy()
     vals = hash(inn[i:i+512], valscopy,ts)
+
 
 result = ""
 res = ""
